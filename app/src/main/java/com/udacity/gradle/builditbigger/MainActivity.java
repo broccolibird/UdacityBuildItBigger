@@ -1,5 +1,7 @@
 package com.udacity.gradle.builditbigger;
 
+import com.katmitchell.Joker;
+
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -39,8 +41,8 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void tellJoke(View view){
-        Toast.makeText(this, "derp", Toast.LENGTH_SHORT).show();
+    public void tellJoke(View view) {
+        Toast.makeText(this, Joker.getAJoke(), Toast.LENGTH_SHORT).show();
     }
 
 
