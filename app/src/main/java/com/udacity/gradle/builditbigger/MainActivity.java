@@ -13,14 +13,11 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.io.IOException;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements JokeAsyncTask.Listener {
 
     private static final String TAG = "MainActivity";
 
@@ -54,66 +51,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void tellJoke(View view) {
-        new JokeAsyncTask().execute();
+        new JokeAsyncTask(this).execute();
 
     }
 
+    @Override
     public void displayJoke(String joke) {
         Intent intent = new Intent(this, JokeDisplayActivity.class);
         intent.putExtra(JokeDisplayActivity.EXTRA_JOKE, joke);
         startActivity(intent);
     }
-
-
-    private class JokeAsyncTask extends AsyncTask<Void, Void, String> {
-
-        @Override
-        protected String doInBackground(Void... params) {
-
-            Jokester.Builder builder = new Jokester.Builder(AndroidHttp.newCompatibleTransport(),
-                    new AndroidJsonFactory(), null)
-                    .setRootUrl(
-                            "http://10.0.2.2:8080/_ah/api/") // 10.0.2.2 is localhost's IP address in Android emulator
-                    .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-                        @Override
-                        public void initialize(
-                                AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
-                                throws IOException {
-                            abstractGoogleClientRequest.setDisableGZipContent(true);
-                        }
-                    });
-
-            Jokester jokester = builder.build();
-            try {
-                Jokester.GetJoke jokeRequest = jokester.getJoke();
-                Joke joke = jokeRequest.execute();
-                return joke.getJoke();
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to get joke, har har har", e);
-            }
-
-//            JokeService jokeService = NetworkManager.getJokeService();
-//            Call<Joke> jokeCall = jokeService.getJoke();
-//
-//            try {
-//                Response<Joke> jokeResponse = jokeCall.execute();
-//                if (jokeResponse.isSuccessful()) {
-//                    return jokeResponse.body().getJoke();
-//                }
-//            } catch (IOException e) {
-//                Log.e(TAG, "Failed to get joke, har har har", e);
-//            }
-//
-            return "Failed to get joke, har har har";
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-
-            displayJoke(s);
-        }
-    }
-
 
 }
